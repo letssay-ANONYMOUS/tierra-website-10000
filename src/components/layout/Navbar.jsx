@@ -11,7 +11,7 @@ const NAV_LINKS = [
 
 export function Navbar({ navigate }) {
   const { cart, setIsCartOpen } = useContext(CartContext);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -22,47 +22,29 @@ export function Navbar({ navigate }) {
       ticking = true;
 
       window.requestAnimationFrame(() => {
-        const nextProgress = Math.max(0, Math.min(window.scrollY / 140, 1));
-        setScrollProgress((prev) =>
-          Math.abs(prev - nextProgress) > 0.001 ? nextProgress : prev
-        );
+        setIsScrolled(window.scrollY > 50);
         ticking = false;
       });
     };
-
-    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const shellHeight = 76 - scrollProgress * 12;
-  const shellOffset = 12 + scrollProgress * 10;
-  const shellInset = 24 + scrollProgress * 72;
-  const shellPaddingX = 24 + scrollProgress * 8;
-  const shellStyle = {
-    height: `${shellHeight}px`,
-    width: `min(1400px, calc(100% - ${shellInset}px))`,
-    paddingLeft: `${shellPaddingX}px`,
-    paddingRight: `${shellPaddingX}px`,
-    transform: `translate3d(0, ${shellOffset}px, 0)`,
-    backdropFilter: `blur(${18 + scrollProgress * 10}px) saturate(${165 + scrollProgress * 25}%)`,
-    WebkitBackdropFilter: `blur(${18 + scrollProgress * 10}px) saturate(${165 + scrollProgress * 25}%)`,
-    boxShadow: `0 ${10 + scrollProgress * 10}px ${34 + scrollProgress * 10}px rgba(28, 28, 28, ${0.08 + scrollProgress * 0.04}), inset 0 1px 0 rgba(255, 255, 255, ${0.72 + scrollProgress * 0.08}), inset 0 -1px 0 rgba(255, 255, 255, ${0.16 + scrollProgress * 0.04})`,
-    willChange: 'width, height, transform, padding, box-shadow, backdrop-filter'
-  };
-
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[60]">
+    <nav
+      className={`fixed top-0 left-0 right-0 z-[60] transition-[padding] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? 'pt-4 md:pt-6' : 'pt-0'}`}
+      style={{ willChange: 'padding-top' }}
+    >
       <div className="mx-auto w-full px-4 md:px-6">
         <div
-          className="frosted-pill mx-auto relative flex transform-gpu items-center justify-between"
-          style={shellStyle}
+          className={`mx-auto relative flex transform-gpu items-center justify-between transition-[max-width,height,padding,background-color,border-color,box-shadow,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? 'max-w-[1000px] h-16 frosted-pill px-8' : 'max-w-[1400px] h-20 md:h-24 px-6 md:px-12'}`}
+          style={{ willChange: 'max-width, height, padding, box-shadow, transform', transform: 'translateZ(0)' }}
         >
           <button className="relative z-10 flex shrink-0 items-center gap-3" onClick={() => navigate('home')}>
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3A4D39]">
-              <Leaf className="h-4 w-4 text-white" />
+            <span className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-500 ${isScrolled ? 'bg-[#3A4D39]' : 'bg-white'}`}>
+              <Leaf className={`h-4 w-4 ${isScrolled ? 'text-white' : 'text-[#3A4D39]'}`} />
             </span>
-            <span className="font-serif text-xl text-[#1C1C1C]">Tierra</span>
+            <span className={`font-serif text-xl transition-colors duration-500 ${isScrolled ? 'text-[#1C1C1C]' : 'text-white'}`}>Tierra</span>
           </button>
 
           <div className="pointer-events-none absolute inset-0 hidden lg:flex items-center justify-center">
@@ -70,7 +52,7 @@ export function Navbar({ navigate }) {
               {NAV_LINKS.map((link) => (
                 <button
                   key={link.label}
-                  className="text-xs uppercase tracking-[0.2em] text-[#1C1C1C]"
+                  className={`text-xs uppercase tracking-[0.2em] transition-colors duration-300 ${isScrolled ? 'text-[#1C1C1C]' : 'text-white'}`}
                   onClick={() => navigate(link.page)}
                 >
                   {link.label}
@@ -80,11 +62,11 @@ export function Navbar({ navigate }) {
           </div>
 
           <div className="relative z-10 ml-auto flex shrink-0 items-center gap-3">
-            <button onClick={() => setIsCartOpen(true)} className="text-[#1C1C1C]">
+            <button onClick={() => setIsCartOpen(true)} className={`transition-colors duration-300 ${isScrolled ? 'text-[#1C1C1C]' : 'text-white'}`}>
               <ShoppingBag />
               {cart.length > 0 && <span className="ml-1 inline-block h-2 w-2 rounded-full bg-[#C5A065]" />}
             </button>
-            <button className="text-[#1C1C1C] lg:hidden" onClick={() => setIsMobileMenuOpen((p) => !p)}>
+            <button className={`lg:hidden transition-colors duration-300 ${isScrolled ? 'text-[#1C1C1C]' : 'text-white'}`} onClick={() => setIsMobileMenuOpen((p) => !p)}>
               {isMobileMenuOpen ? <X /> : <Menu />}
             </button>
           </div>
@@ -93,8 +75,7 @@ export function Navbar({ navigate }) {
 
       <div className="mx-auto w-full px-4 md:px-6">
         <div
-          className={`mx-auto overflow-hidden rounded-2xl bg-white/95 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden ${isMobileMenuOpen ? 'mt-4 max-h-96 py-6' : 'mt-0 max-h-0 py-0'}`}
-          style={{ width: `min(1400px, calc(100% - ${shellInset}px))`, transform: `translate3d(0, ${shellOffset}px, 0)` }}
+          className={`mx-auto overflow-hidden rounded-2xl bg-white/95 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden ${isScrolled ? 'max-w-[1000px]' : 'max-w-[1400px]'} ${isMobileMenuOpen ? 'mt-4 max-h-96 py-6' : 'mt-0 max-h-0 py-0'}`}
         >
           <div className="flex flex-col items-center gap-6">
             {NAV_LINKS.map((link) => (
