@@ -86,7 +86,6 @@ export default function App() {
   return (
     <CartProvider>
       {!isLoaded && <Preloader onComplete={() => setIsLoaded(true)} />}
-      <div className={`bg-grain transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`} />
       <div className={`min-h-screen transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
         <Navbar navigate={setCurrentPage} />
         <ItemModal />
