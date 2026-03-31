@@ -39,7 +39,7 @@ export function Navbar({ navigate }) {
       <div className="mx-auto w-full px-4 md:px-6">
         <div
           className={`mx-auto relative flex transform-gpu items-center justify-between transition-[max-width,height,padding,background-color,border-color,box-shadow] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? 'max-w-[1000px] h-16 frosted-pill px-8' : 'max-w-[1400px] h-20 md:h-24 px-6 md:px-12'}`}
-          style={{ willChange: 'max-width, height, padding, box-shadow' }}
+          style={{ willChange: 'max-width, height, padding, box-shadow', transform: 'translateZ(0)' }}
         >
           <button className="relative z-10 flex shrink-0 items-center gap-3" onClick={() => navigate('home')}>
             <span className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-500 ${isScrolled ? 'bg-[#3A4D39]' : 'bg-white'}`}>
